@@ -61,21 +61,23 @@ const main = async () => {
       }
     }
 
-    core.debug("Running task...");
+    core.info("Running task...");
     let task = await ecs.runTask(taskParams).promise();
     const taskArn = task.tasks[0].taskArn;
     core.setOutput("task-arn", taskArn);
 
-    core.debug("Waiting for task to finish...");
+    core.info("Waiting for task to finish...");
     await ecs.waitFor("tasksStopped", { cluster, tasks: [taskArn] }).promise();
 
-    core.debug("Checking status of task");
+    core.info("Checking status of task");
     task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
     const exitCode = task.tasks[0].containers[0].exitCode;
 
     if (exitCode === 0) {
+      core.info("Exit code of container was 0.  Success!");
       core.setOutput("status", "success");
     } else {
+      core.info("Exit code of container was ", exitCode);
       core.setFailed(task.tasks[0].stoppedReason);
 
       const taskHash = taskArn.split("/").pop();
