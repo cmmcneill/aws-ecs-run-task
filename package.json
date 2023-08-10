@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "aws-sdk": "^2.1433.0",
-    "aws-sdk-js-codemod": "^0.17.5"
+    "@aws-sdk/client-ecs": "^3.388.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.32.0"
