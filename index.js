@@ -1,6 +1,5 @@
 const core = require("@actions/core");
-const AWS = require("aws-sdk"),
-      {
+const {
         ECS
       } = require("@aws-sdk/client-ecs");
 
@@ -111,7 +110,7 @@ const main = async () => {
 
       const taskHash = taskArn.split("/").pop();
       core.info(
-        `Task failed.  See Amazon ECS console: https://console.aws.amazon.com/ecs/home?region=${AWS.config.region}#/clusters/${cluster}/tasks/${taskHash}/details`
+        `Task failed.  See Amazon ECS console:`
       );
     }
   } catch (error) {

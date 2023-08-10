@@ -29164,14 +29164,6 @@ module.exports = eval("require")("aws-crt");
 
 /***/ }),
 
-/***/ 20159:
-/***/ ((module) => {
-
-module.exports = eval("require")("aws-sdk");
-
-
-/***/ }),
-
 /***/ 39491:
 /***/ ((module) => {
 
@@ -29382,8 +29374,7 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const core = __nccwpck_require__(42186);
-const AWS = __nccwpck_require__(20159),
-      {
+const {
         ECS
       } = __nccwpck_require__(18209);
 
@@ -29494,7 +29485,7 @@ const main = async () => {
 
       const taskHash = taskArn.split("/").pop();
       core.info(
-        `Task failed.  See Amazon ECS console: https://console.aws.amazon.com/ecs/home?region=${AWS.config.region}#/clusters/${cluster}/tasks/${taskHash}/details`
+        `Task failed.  See Amazon ECS console:`
       );
     }
   } catch (error) {
