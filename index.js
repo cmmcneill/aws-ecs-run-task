@@ -3,27 +3,16 @@ const AWS = require("aws-sdk");
 
 const ecs = new AWS.ECS();
 
-async function waitForTaskState(clusterName, taskArn, desiredStatus, retries) {
-  task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
-  
-  let status = data.tasks[0].lastStatus;
-  core.info("Task Status is:" + status);
-
-  if(status == desiredStatus) {
-    core.info("Successfully achieved status of " + status);
-    return;
-  }
-
-  if(retries > 100) {
-    core.info("Timed out.");
-    return;
-  }
-
-  setTimeout(function() {
-    waitForTaskState(clusterName, taskArn, desiredStatus, retries + 1);
-  }, 6000);
-
+function wait6Seconds() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('resolved');
+    }, 6000);
+  });
 }
+
+  
+
 
 
 const main = async () => {
@@ -91,8 +80,20 @@ const main = async () => {
     core.info("New Task ARN: " + taskArn);
 
 
-    await waitForTaskState(cluster, taskArn, "STOPPED", 0).promise();
-
+    for(let z = 1; z < 100; z++) {
+      task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
+  
+      let status = data.tasks[0].lastStatus;
+      core.info("Task Status is:" + status);
+  
+      if(status == desiredStatus) {
+        core.info("Successfully achieved status of " + status);
+        break;
+      }
+  
+      await wait6Seconds();
+    }
+    
 
     core.info("Checking status of task");
     task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
