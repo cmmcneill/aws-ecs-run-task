@@ -11,7 +11,7 @@ function waitForTaskState(clusterName, taskArn, desiredStatus, retries) {
     }
 
     let status = data.tasks[0].lastStatus;
-    core.info("Task Status is:" , status, " Desired status is: ", desiredStatus;
+    core.info("Task Status is:" , status);
 
     if(status == desiredStatus) {
       core.info("Successfully achieved status of ", status);
