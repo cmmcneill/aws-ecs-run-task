@@ -3,6 +3,38 @@ const AWS = require("aws-sdk");
 
 const ecs = new AWS.ECS();
 
+function waitForTaskState(clusterName, taskArn, desiredStatus, retries) {
+  ecs.describeTasks(function(awsErr, data) {
+    if(awsErr) {
+      core.info("Failed to ask ECS for description of task.  Aborting.");
+      return;
+    }
+
+    let status = data.tasks[0].lastStatus;
+    core.info("Task Status is:" , status, " Desired status is: ", desiredStatus;
+
+    if(status == desiredStatus) {
+      core.info("Successfully achieved status of ", status);
+      return;
+    }
+
+    if(retries > 100) {
+      core.info("Timed out.");
+      return;
+    }
+
+    setTimeout(function() {
+      waitForTaskState(clusterName, taskArn, desiredStatus, retries + 1);
+    }, 6000);
+
+  }, {
+    cluster: clusterName,
+    tasks: [ taskArn ],
+  });
+
+}
+
+
 const main = async () => {
   const cluster = core.getInput("cluster", { required: true });
   const taskDefinition = core.getInput("task-definition", { required: true });
@@ -65,9 +97,11 @@ const main = async () => {
     let task = await ecs.runTask(taskParams).promise();
     const taskArn = task.tasks[0].taskArn;
     core.setOutput("task-arn", taskArn);
+    core.info("New Task ARN: ", taskArn);
 
-    core.info("Waiting for task to finish...");
-    await ecs.waitFor("tasksStopped", { cluster, tasks: [taskArn] }).promise();
+
+    waitForTaskState(cluster, taskArn, "STOPPED", 0);
+
 
     core.info("Checking status of task");
     task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
@@ -82,7 +116,7 @@ const main = async () => {
 
       const taskHash = taskArn.split("/").pop();
       core.info(
-        `task failed, you can check the error on Amazon ECS console: https://console.aws.amazon.com/ecs/home?region=${AWS.config.region}#/clusters/${cluster}/tasks/${taskHash}/details`
+        `Task failed.  See Amazon ECS console: https://console.aws.amazon.com/ecs/home?region=${AWS.config.region}#/clusters/${cluster}/tasks/${taskHash}/details`
       );
     }
   } catch (error) {
