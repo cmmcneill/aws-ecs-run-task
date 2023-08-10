@@ -83,17 +83,17 @@ const main = async () => {
     for(let z = 1; z < 100; z++) {
       task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
   
-      let status = data.tasks[0].lastStatus;
+      let status = task.tasks[0].lastStatus;
       core.info("Task Status is:" + status);
   
-      if(status == desiredStatus) {
+      if(status == "RUNNING") {
         core.info("Successfully achieved status of " + status);
         break;
       }
   
       await wait6Seconds();
     }
-    
+
 
     core.info("Checking status of task");
     task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
