@@ -1,7 +1,10 @@
 const core = require("@actions/core");
-const AWS = require("aws-sdk");
+const AWS = require("aws-sdk"),
+      {
+        ECS
+      } = require("@aws-sdk/client-ecs");
 
-const ecs = new AWS.ECS();
+const ecs = new ECS();
 
 function wait6Seconds() {
   return new Promise((resolve) => {
@@ -74,14 +77,14 @@ const main = async () => {
     }
 
     core.info("Running task...");
-    let task = await ecs.runTask(taskParams).promise();
+    let task = await ecs.runTask(taskParams);
     const taskArn = task.tasks[0].taskArn;
     core.setOutput("task-arn", taskArn);
     core.info("New Task ARN: " + taskArn);
 
 
     for(let z = 1; z < 100; z++) {
-      task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
+      task = await ecs.describeTasks({ cluster, tasks: [taskArn] });
   
       let status = task.tasks[0].lastStatus;
       core.info("Task Status is:" + status);
@@ -96,7 +99,7 @@ const main = async () => {
 
 
     core.info("Checking status of task");
-    task = await ecs.describeTasks({ cluster, tasks: [taskArn] }).promise();
+    task = await ecs.describeTasks({ cluster, tasks: [taskArn] });
     const exitCode = task.tasks[0].containers[0].exitCode;
 
     if (exitCode === 0) {
