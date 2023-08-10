@@ -86,7 +86,7 @@ const main = async () => {
       let status = task.tasks[0].lastStatus;
       core.info("Task Status is:" + status);
   
-      if(status == "RUNNING") {
+      if(status == "STOPPED") {
         core.info("Successfully achieved status of " + status);
         break;
       }
