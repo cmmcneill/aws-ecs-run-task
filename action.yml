@@ -26,6 +26,9 @@ inputs:
     description: 'Assign public IP to the task. (ENABLED/DISABLED)'
     required: false
     default: 'ENABLED'
+  targetContainerName: 
+    description: 'The name of the container in the task definition for which we want to see a good exit code'
+    required: true
 
 outputs:
   task-arn:

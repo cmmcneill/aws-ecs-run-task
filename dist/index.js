@@ -29399,6 +29399,8 @@ const main = async () => {
   const securityGroups = core.getMultilineInput("security-groups", {
     required: true,
   });
+  const targetContainerName = core.getInput('targetContainerName', {required : true});
+
 
   const assignPublicIp =
     core.getInput("assign-public-ip", { required: false }) || "ENABLED";
@@ -29474,13 +29476,25 @@ const main = async () => {
 
     core.info("Checking status of task");
     task = await ecs.describeTasks({ cluster, tasks: [taskArn] });
-    const exitCode = task.tasks[0].containers[0].exitCode;
 
-    if (exitCode === 0) {
-      core.info("Exit code of container was 0.  Success!");
+    let targetExitCode = -999;
+
+    for(let x = 0; x < task.tasks[0].containers.length; x++) {
+      const name =     task.tasks[0].containers[x].name;
+      const exitCode = task.tasks[0].containers[0].exitCode;
+      
+      core.info("Container '" + name + " exited with code " + exitCode)
+      
+      if(name == targetContainerName) {
+        targetExitCode = exitCode;
+      }
+    }
+
+    if (targetExitCode === 0) {
+      core.info("Exit code of important container was 0.  Success!");
       core.setOutput("status", "success");
     } else {
-      core.info("Exit code of container was " + exitCode);
+      core.info("Exit code of important container was " + exitCode);
       core.setFailed(task.tasks[0].stoppedReason);
 
       const taskHash = taskArn.split("/").pop();
