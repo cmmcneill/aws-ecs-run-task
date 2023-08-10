@@ -5,10 +5,6 @@ const ecs = new AWS.ECS();
 
 function waitForTaskState(clusterName, taskArn, desiredStatus, retries) {
   ecs.describeTasks(function(awsErr, data) {
-    if(awsErr) {
-      core.info("Failed to ask ECS for description of task.  Aborting.");
-      return;
-    }
 
     let status = data.tasks[0].lastStatus;
     core.info("Task Status is:" + status);
