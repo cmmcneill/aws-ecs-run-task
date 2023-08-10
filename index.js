@@ -11,10 +11,10 @@ function waitForTaskState(clusterName, taskArn, desiredStatus, retries) {
     }
 
     let status = data.tasks[0].lastStatus;
-    core.info("Task Status is:" , status);
+    core.info("Task Status is:" + status);
 
     if(status == desiredStatus) {
-      core.info("Successfully achieved status of ", status);
+      core.info("Successfully achieved status of " + status);
       return;
     }
 
@@ -97,7 +97,7 @@ const main = async () => {
     let task = await ecs.runTask(taskParams).promise();
     const taskArn = task.tasks[0].taskArn;
     core.setOutput("task-arn", taskArn);
-    core.info("New Task ARN: ", taskArn);
+    core.info("New Task ARN: " + taskArn);
 
 
     waitForTaskState(cluster, taskArn, "STOPPED", 0);
@@ -111,7 +111,7 @@ const main = async () => {
       core.info("Exit code of container was 0.  Success!");
       core.setOutput("status", "success");
     } else {
-      core.info("Exit code of container was ", exitCode);
+      core.info("Exit code of container was " + exitCode);
       core.setFailed(task.tasks[0].stoppedReason);
 
       const taskHash = taskArn.split("/").pop();
