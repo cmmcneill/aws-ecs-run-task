@@ -84,7 +84,7 @@ const main = async () => {
     core.info("New Task ARN: " + taskArn);
 
 
-    for(let z = 1; z < 100; z++) {
+    for(let z = 1; z < 300; z++) {
       task = await ecs.describeTasks({ cluster, tasks: [taskArn] });
   
       let status = task.tasks[0].lastStatus;
@@ -106,7 +106,7 @@ const main = async () => {
 
     for(let x = 0; x < task.tasks[0].containers.length; x++) {
       const name =     task.tasks[0].containers[x].name;
-      const exitCode = task.tasks[0].containers[0].exitCode;
+      const exitCode = task.tasks[0].containers[x].exitCode;
       
       core.info("Container '" + name + " exited with code " + exitCode)
       
